@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from shutil import rmtree
 import shutil
+import importlib
 from typing import Optional
 
 import appdirs
@@ -203,7 +204,7 @@ class ProjectSettings(BaseSettings):
         for plugin_name in plugins:
             plugin_lib = importlib.import_module(plugin_name)
             plugin = plugin_lib.Plugin()
-            plugins_list[name] = plugin.infos
+            plugins_list[plugin_name] = plugin.infos
         return {"plugins_list": plugins_list}
 
     def reset_for_project_selection(self) -> None:

@@ -261,7 +261,7 @@ class ConfirmationPage(QtWidgets.QWizardPage):
         self.plugin_infos_label.setText(infos)
 
     def validatePage(self):
-        signals.plugin_imported.emit(self.wizard.plugin, self.wizard.plugin.infos['id'])
+        signals.plugin_imported.emit(self.wizard.plugin, self.wizard.plugin.infos['name'])
         return True
 
 
@@ -282,7 +282,6 @@ class MainWorkerThread(QtCore.QThread):
                 sys.path.append(temp_path+"/temp_plugin")
                 metadata = importlib.import_module("metadata")
                 plugin_name = metadata.infos['name']
-                print("NAME ="+plugin_name)
                 # create plugins folder if necessary
                 target_dir = bw.projects.request_directory("plugins/{}".format(plugin_name))
                 # empty plugin directory

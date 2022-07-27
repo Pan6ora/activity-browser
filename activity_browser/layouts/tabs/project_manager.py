@@ -199,8 +199,9 @@ class PluginWidget(QtWidgets.QWidget):
         self.table.model.sync()
 
     def update_widget(self):
-        no_databases = self.table.rowCount() == 0
-        self.table.setVisible(not no_databases)
+        no_plugins = self.table.rowCount() == 0
+        self.table.setVisible(not no_plugins)
+
 
 class ActivityBiosphereWidget(QtWidgets.QWidget):
     def __init__(self, parent):

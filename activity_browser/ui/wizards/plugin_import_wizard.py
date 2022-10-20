@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import importlib
+import traceback
 import sys
 import os
 import shutil
@@ -300,6 +301,7 @@ class MainWorkerThread(QtCore.QThread):
             except:
                 import_signals.loading_failed.emit()
                 import_signals.cancel_sentinel = True
+                print(traceback.format_exc())
 
         if not import_signals.cancel_sentinel:
             import_signals.import_finished.emit(self.plugin)

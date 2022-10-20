@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import importlib.util
+import traceback
 import sys
 
 import brightway2 as bw
@@ -111,9 +112,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def import_plugin(self, name):
         """ load given plugin package and return Plugin instance
         """
-        sys.path.append(bw.projects.request_directory("plugins"))
-        plugin_lib = importlib.import_module(name)
-        return plugin_lib.Plugin()
+        try:
+            sys.path.append(bw.projects.request_directory("plugins"))
+            plugin_lib = importlib.import_module(name)
+            return plugin_lib.Plugin()
+        except:
+            print("Error: Import of plugin {} failed".format(name))
+            print(traceback.format_exc())
 
     def add_plugin(self, name):
         """ add or reload tabs of the given plugin
@@ -128,10 +133,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.close_plugins_tabs()
         for name in project_settings.get_plugins_list():
-            try:
-                self.add_plugin(name)
-            except:
-                print("Error: Import of plugin {} failed".format(name))
+            self.add_plugin(name)
 
     def toggle_debug_window(self):
         """Toggle between any window and the debug window."""

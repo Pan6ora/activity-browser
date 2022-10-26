@@ -109,6 +109,9 @@ class MainWindow(QtWidgets.QMainWindow):
         signals.add_plugin.connect(self.add_plugin)
 
     def remove_plugin(self, name):
+        # Apply plugin's remove() function
+        self.plugins[name].remove()
+        # Close plugin tabs
         self.close_plugin_tabs(name)
         # Remove plugin object for plugins dict
         self.plugins.pop(name)

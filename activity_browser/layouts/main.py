@@ -94,6 +94,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.status_bar = Statusbar(self)
         self.setStatusBar(self.status_bar)
 
+        self.plugins = {}
+
         self.connect_signals()
         self.reload_plugins()
 
@@ -108,6 +110,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def remove_plugin(self, name):
         self.close_plugin_tabs(name)
+        # Remove plugin object for plugins dict
+        self.plugins.pop(name)
     
     def import_plugin(self, name):
         """ load given plugin package and return Plugin instance
@@ -125,6 +129,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.close_plugin_tabs(name)
         plugin = self.import_plugin(name)
+        self.plugins[name] = plugin
         for tab in plugin.tabs:
             self.add_tab_to_panel(tab, plugin.infos["name"], tab.panel)
 

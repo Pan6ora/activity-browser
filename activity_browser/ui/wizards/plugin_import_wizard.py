@@ -3,10 +3,9 @@ import importlib
 import traceback
 import sys
 import os
-import shutil
 import tempfile
 from pathlib import Path
-from distutils.dir_util import copy_tree
+from shutil import copytree, rmtree
 
 import brightway2 as bw
 import py7zr
@@ -286,14 +285,9 @@ class MainWorkerThread(QtCore.QThread):
                 # create plugins folder if necessary
                 target_dir = bw.projects.request_directory("plugins/{}".format(plugin_name))
                 # empty plugin directory
-                for files in os.listdir(target_dir):
-                    path = os.path.join(target_dir, files)
-                    try:
-                        shutil.rmtree(path)
-                    except OSError:
-                        os.remove(path)
+                rmtree(target_dir)
                 # copy plugin content into folder
-                copy_tree(temp_path+"/temp_plugin", target_dir)
+                copytree(temp_path+"/temp_plugin/", target_dir+"/")
                 # setup plugin
                 sys.path.append(bw.projects.request_directory("plugins"))
                 plugin_lib = importlib.import_module(plugin_name)

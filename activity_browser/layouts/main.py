@@ -2,6 +2,7 @@
 import importlib.util
 import traceback
 import sys
+import shutil
 
 import brightway2 as bw
 from PySide2 import QtCore, QtGui, QtWidgets
@@ -115,6 +116,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close_plugin_tabs(name)
         # Remove plugin object for plugins dict
         self.plugins.pop(name)
+        # Remove plugin folder
+        plugin_dir = bw.projects.request_directory("plugins/{}".format(name))
+        shutil.rmtree(plugin_dir)
     
     def import_plugin(self, name):
         """ load given plugin package and return Plugin instance

@@ -98,7 +98,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.plugins = {}
 
         self.connect_signals()
-        self.reload_plugins()
 
     def connect_signals(self):
         # Keyboard shortcuts
@@ -124,8 +123,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """ load given plugin package and return Plugin instance
         """
         try:
-            sys.path.append(bw.projects.request_directory("plugins"))
-            plugin_lib = importlib.import_module(name)
+            plugins_dir = bw.projects.request_directory("plugins")
+            plugin_lib = importlib.import_module(name, plugins_dir)
+            print("Loading plugin {}".format(name))
             return plugin_lib.Plugin()
         except:
             print("Error: Import of plugin {} failed".format(name))
@@ -143,6 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def reload_plugins(self):
         """ close all plugins tabs then import all plugins tabs
         """
+        sys.path.append(bw.projects.request_directory("plugins"))
         self.close_plugins_tabs()
         for name in project_settings.get_plugins_list():
             self.add_plugin(name)

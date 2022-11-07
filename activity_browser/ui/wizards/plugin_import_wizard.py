@@ -289,8 +289,8 @@ class MainWorkerThread(QtCore.QThread):
                 # copy plugin content into folder
                 copytree(temp_path+"/temp_plugin/", target_dir+"/")
                 # setup plugin
-                sys.path.append(bw.projects.request_directory("plugins"))
-                plugin_lib = importlib.import_module(plugin_name)
+                plugins_dir = bw.projects.request_directory("plugins")
+                plugin_lib = importlib.import_module(plugin_name, plugins_dir)
                 self.plugin = plugin_lib.Plugin()
                 self.plugin.initialize()
             except:

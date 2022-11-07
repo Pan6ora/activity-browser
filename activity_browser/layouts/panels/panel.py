@@ -99,15 +99,9 @@ class ABTab(QtWidgets.QTabWidget):
         for i in reversed(range(open_tab_count)):
             self.close_tab(i)
 
-    def close_plugin(self, plugin):
+    def close_plugin(self, name):
         """close tab related to plugin."""
-        tabs = self.tabs.copy()
-        for name, tab in tabs.items():
-            try:
-                if tab.isPlugin and tab.plugin.infos["name"] == name:
-                    self.close_tab_by_tab_name(name)
-            except:
-                pass        
+        self.close_tab_by_tab_name(name)   
 
     def close_plugins(self):
         """look for all PluginTab tabs and delete them."""

@@ -125,6 +125,7 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             plugins_dir = bw.projects.request_directory("plugins")
             plugin_lib = importlib.import_module(name, plugins_dir)
+            importlib.reload(plugin_lib)
             print("Loading plugin {}".format(name))
             return plugin_lib.Plugin()
         except:

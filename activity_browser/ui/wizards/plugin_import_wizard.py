@@ -275,19 +275,20 @@ class MainWorkerThread(QtCore.QThread):
         self.plugin_path = plugin_path
 
     def run(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_path:
-            self.run_extract(self.plugin_path, temp_path+"/temp_plugin")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            self.run_extract(self.plugin_path, temp_dir)
             try:
                 # Import code of plugin
-                sys.path.append(temp_path+"/temp_plugin")
-                metadata = importlib.import_module("metadata")
+                sys.path.append(temp_dir)
+                metadata = importlib.import_module("metadata", temp_dir)
+                importlib.reload(metadata)
                 plugin_name = metadata.infos['name']
                 # create plugins folder if necessary
                 target_dir = bw.projects.request_directory("plugins/{}".format(plugin_name))
                 # empty plugin directory
                 rmtree(target_dir)
                 # copy plugin content into folder
-                copytree(temp_path+"/temp_plugin/", target_dir+"/")
+                copytree(temp_dir, target_dir+"/")
                 # setup plugin
                 plugins_dir = bw.projects.request_directory("plugins")
                 plugin_lib = importlib.import_module(plugin_name, plugins_dir)

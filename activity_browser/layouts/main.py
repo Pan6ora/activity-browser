@@ -145,7 +145,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """ close all plugins tabs then import all plugins tabs
         """
         sys.path.append(bw.projects.request_directory("plugins"))
-        self.close_plugins_tabs()
         for name in project_settings.get_plugins_list():
             self.add_plugin(name)
 
@@ -169,10 +168,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_tab_to_panel(self, obj, label, side):
         panel = self.left_panel if side == 'left' else self.right_panel
         panel.add_tab(obj, label)
-
-    def close_plugins_tabs(self):
-        for panel in (self.left_panel, self.right_panel):
-            panel.close_plugins()
         
     def close_plugin_tabs(self, plugin):
         for panel in (self.left_panel, self.right_panel):

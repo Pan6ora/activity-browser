@@ -293,7 +293,6 @@ class MainWorkerThread(QtCore.QThread):
                 plugins_dir = bw.projects.request_directory("plugins")
                 plugin_lib = importlib.import_module(plugin_name, plugins_dir)
                 self.plugin = plugin_lib.Plugin()
-                self.plugin.initialize()
             except:
                 import_signals.loading_failed.emit()
                 import_signals.cancel_sentinel = True

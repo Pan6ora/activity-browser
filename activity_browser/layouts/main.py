@@ -137,6 +137,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.close_plugin_tabs(name)
         plugin = self.import_plugin(name)
+        plugin.load()
         self.plugins[name] = plugin
         for tab in plugin.tabs:
             self.add_tab_to_panel(tab, plugin.infos["name"], tab.panel)

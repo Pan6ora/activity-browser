@@ -11,9 +11,14 @@ class PluginController(QObject):
         self.window = parent
 
         signals.import_plugin.connect(self.import_plugin_wizard)
+        signals.plugin_imported.connect(self.plugin_imported)
 
     @Slot(name="openImportWizard")
     def import_plugin_wizard(self) -> None:
         """Start the plugin importation wizard."""
         wizard = PluginImportWizard(self.window)
         wizard.show()
+
+    def plugin_imported(self, plugin, name):
+        plugin.load()
+

@@ -298,23 +298,36 @@ class MainWorkerThread(QtCore.QThread):
         self.plugin_path = plugin_path
 
     def run(self) -> None:
-        # create plugins folder if necessary
-        target_dir = bw.projects.request_directory("plugins/{}".format(self.plugin_name))
-        if target_dir:
-            # TODO: empty folder if exist
-            print('Create folder plugins/{} in project directory'.format(self.plugin_name))
-        else:
-            warning = 'Unable to create folder:<br>{}'.format(target_dir)
-            QtWidgets.QMessageBox.warning(self, 'Unable to create plugin folder!', warning)
-            return
-        self.run_extract(self.plugin_path, target_dir)
-
-        sys.path.append(bw.projects.request_directory("plugins"))
+        with tempfile.TemporaryDirectory() as temp_path:
+            self.run_extract(self.plugin_path, temp_path+"/temp_plugin")
+            try:
+                # Import code of plugin
+                sys.path.append(temp_path+"/temp_plugin")
+                metadata = importlib.import_module("metadata")
+                plugin_name = metadata.infos['name']
+                print("NAME ="+plugin_name)
+                # create plugins folder if necessary
+                target_dir = bw.projects.request_directory("plugins/{}".format(plugin_name))
+                # empty plugin directory
+                for files in os.listdir(target_dir):
+                    path = os.path.join(target_dir, files)
+                    try:
+                        shutil.rmtree(path)
+                    except OSError:
+                        os.remove(path)
+                # copy plugin content into folder
+                copy_tree(temp_path+"/temp_plugin", target_dir)
+                # setup plugin
+                sys.path.append(bw.projects.request_directory("plugins"))
                 plugin_lib = importlib.import_module(plugin_name)
+                self.plugin = plugin_lib.Plugin()
+            except:
+                import_signals.loading_failed.emit()
+                import_signals.cancel_sentinel = True
 
         if not import_signals.cancel_sentinel:
-            import_signals.finished.emit(plugin, self.plugin_name)
-
+            import_signals.import_finished.emit(self.plugin)
+    
     def run_extract(self, plugin_path, target_dir) -> None:
         """Extract the given .7z archive."""
         archive = py7zr.SevenZipFile(plugin_path, mode='r')

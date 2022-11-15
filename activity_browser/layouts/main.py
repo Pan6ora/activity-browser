@@ -128,7 +128,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.close_plugins_tabs()
         for name in project_settings.get_plugins_list():
-            self.add_plugin(name)
+            try:
+                self.add_plugin(name)
+            except:
+                print("Error: Import of plugin {} failed".format(name))
 
     def toggle_debug_window(self):
         """Toggle between any window and the debug window."""

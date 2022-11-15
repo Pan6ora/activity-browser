@@ -16,6 +16,12 @@ class ABTab(QtWidgets.QTabWidget):
         signals.toggle_show_or_hide_tab.connect(self.toggle_tab_visibility)
         signals.hide_when_empty.connect(self.hide_when_empty)
 
+    def add_tab(self, obj, tab_name):
+        """Default addTab method and add item to self.tabs
+        """
+        self.tabs[tab_name] = obj
+        self.addTab(obj, tab_name)
+
     def select_tab(self, obj):
         """Brings tab to focus."""
         self.setCurrentIndex(self.indexOf(obj))
@@ -92,3 +98,23 @@ class ABTab(QtWidgets.QTabWidget):
         open_tab_count = len(self.tabs)
         for i in reversed(range(open_tab_count)):
             self.close_tab(i)
+
+    def close_plugin(self, plugin):
+        """close tab related to plugin."""
+        tabs = self.tabs.copy()
+        for name, tab in tabs.items():
+            try:
+                if tab.isPlugin and tab.plugin.infos["name"] == name:
+                    self.close_tab_by_tab_name(name)
+            except:
+                pass        
+
+    def close_plugins(self):
+        """look for all PluginTab tabs and delete them."""
+        tabs = self.tabs.copy()
+        for name, tab in tabs.items():
+            try:
+                if tab.isPlugin:
+                    self.close_tab_by_tab_name(name)
+            except:
+                pass

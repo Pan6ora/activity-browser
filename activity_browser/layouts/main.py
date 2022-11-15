@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import importlib.util
 import sys
 
+import brightway2 as bw
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from ..ui.icons import qicons
@@ -9,6 +11,8 @@ from ..ui.statusbar import Statusbar
 from ..ui.style import header
 from ..ui.utils import StdRedirector
 from .panels import LeftPanel, RightPanel
+from ..settings import project_settings
+from ..signals import signals
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -90,11 +94,41 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setStatusBar(self.status_bar)
 
         self.connect_signals()
+        self.reload_plugins()
 
     def connect_signals(self):
         # Keyboard shortcuts
         self.shortcut_debug = QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+D"), self)
         self.shortcut_debug.activated.connect(self.toggle_debug_window)
+        signals.reload_plugins.connect(self.reload_plugins)
+        signals.project_selected.connect(self.reload_plugins)
+        signals.remove_plugin.connect(self.remove_plugin)
+        signals.add_plugin.connect(self.add_plugin)
+
+    def remove_plugin(self, name):
+        self.close_plugin_tabs(name)
+    
+    def import_plugin(self, name):
+        """ load given plugin package and return Plugin instance
+        """
+        sys.path.append(bw.projects.request_directory("plugins"))
+        plugin_lib = importlib.import_module("{}.plugin".format(name))
+        return plugin_lib.Plugin()
+
+    def add_plugin(self, name):
+        """ add or reload tabs of the given plugin
+        """
+        self.close_plugin_tabs(name)
+        plugin = self.import_plugin(name)
+        for tab in plugin.tabs:
+            self.add_tab_to_panel(tab, plugin.infos["name"], tab.panel)
+
+    def reload_plugins(self):
+        """ close all plugins tabs then import all plugins tabs
+        """
+        self.close_plugins_tabs()
+        for name in project_settings.get_plugins_list():
+            self.add_plugin(name)
 
     def toggle_debug_window(self):
         """Toggle between any window and the debug window."""
@@ -115,7 +149,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def add_tab_to_panel(self, obj, label, side):
         panel = self.left_panel if side == 'left' else self.right_panel
-        panel.addTab(obj, label)
+        panel.add_tab(obj, label)
+
+    def close_plugins_tabs(self):
+        for panel in (self.left_panel, self.right_panel):
+            panel.close_plugins()
+        
+    def close_plugin_tabs(self, plugin):
+        for panel in (self.left_panel, self.right_panel):
+            panel.close_plugin(plugin)
 
     def select_tab(self, obj, side):
         panel = self.left_panel if side == 'left' else self.right_panel

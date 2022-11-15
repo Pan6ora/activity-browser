@@ -181,7 +181,7 @@ class ProjectSettings(BaseSettings):
     def get_default_settings(cls) -> dict:
         """ Return default empty settings dictionary.
         """
-        return cls.process_brightway_databases() | cls.process_plugins()
+        return {**cls.process_brightway_databases(), **cls.process_plugins()}
 
     @staticmethod
     def process_brightway_databases() -> dict:

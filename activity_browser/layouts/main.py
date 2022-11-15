@@ -112,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """ load given plugin package and return Plugin instance
         """
         sys.path.append(bw.projects.request_directory("plugins"))
-        plugin_lib = importlib.import_module("{}.plugin".format(name))
+        plugin_lib = importlib.import_module(name)
         return plugin_lib.Plugin()
 
     def add_plugin(self, name):

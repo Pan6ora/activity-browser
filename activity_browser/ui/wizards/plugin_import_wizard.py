@@ -310,8 +310,7 @@ class MainWorkerThread(QtCore.QThread):
         self.run_extract(self.plugin_path, target_dir)
 
         sys.path.append(bw.projects.request_directory("plugins"))
-        plugin_lib = importlib.import_module("{}.plugin".format(self.plugin_name))
-        plugin = plugin_lib.Plugin()
+                plugin_lib = importlib.import_module(plugin_name)
 
         if not import_signals.cancel_sentinel:
             import_signals.finished.emit(plugin, self.plugin_name)

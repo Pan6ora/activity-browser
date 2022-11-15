@@ -201,7 +201,7 @@ class ProjectSettings(BaseSettings):
         sys.path.append(plugins_path)
         plugins = [f.path for f in os.scandir(plugins_path) if f.is_dir()]
         for plugin_name in plugins:
-            plugin_lib = importlib.import_module("{}.plugin".format(self.plugin_name))
+            plugin_lib = importlib.import_module(plugin_name)
             plugin = plugin_lib.Plugin()
             plugins_list[name] = plugin.infos
         return {"plugins_list": plugins_list}

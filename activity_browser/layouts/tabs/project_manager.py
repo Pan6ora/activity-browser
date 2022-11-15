@@ -5,6 +5,7 @@ from ...ui.style import header
 from ...ui.icons import qicons
 from ...ui.tables import (
     DatabasesTable,
+    PluginsTable,
     ProjectListWidget,
     ActivitiesBiosphereTable,
 )
@@ -19,11 +20,13 @@ class ProjectTab(QtWidgets.QWidget):
         # main widgets
         self.projects_widget = ProjectsWidget()
         self.databases_widget = DatabaseWidget(self)
+        self.plugins_widget = PluginWidget(self)
         self.activity_biosphere_widget = ActivityBiosphereWidget(self)
 
         # Layout
         self.splitter = QtWidgets.QSplitter(QtCore.Qt.Vertical)
         self.splitter.addWidget(self.databases_widget)
+        self.splitter.addWidget(self.plugins_widget)
         self.splitter.addWidget(self.activity_biosphere_widget)
 
         self.overall_layout = QtWidgets.QVBoxLayout()
@@ -49,13 +52,14 @@ class ProjectTab(QtWidgets.QWidget):
         no_databases = self.activity_biosphere_widget.table.rowCount() == 0
 
         self.databases_widget.update_widget()
+        self.plugins_widget.update_widget()
 
         self.activity_biosphere_widget.setVisible(not no_databases)
         self.resize_splitter()
 
     def resize_splitter(self):
         """Splitter sizes need to be reset (for some reason this is buggy if not done like this)"""
-        widgets = [self.databases_widget, self.activity_biosphere_widget]
+        widgets = [self.databases_widget, self.plugins_widget, self.activity_biosphere_widget]
         sizes = [x.sizeHint().height() for x in widgets]
         self.splitter.setSizes(sizes)
 
@@ -162,7 +166,32 @@ class DatabaseWidget(QtWidgets.QWidget):
         self.table.setVisible(not no_databases)
         self.label_change_readonly.setVisible(not no_databases)
 
+class PluginWidget(QtWidgets.QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        # Buttons
+        self.import_plugin_button = QtWidgets.QPushButton(qicons.import_plugin, "Import")
+        self.import_plugin_button.setToolTip('Import a new plugin')
 
+        self._construct_layout()
+        self._connect_signals()
+
+    def _connect_signals(self):
+        self.import_plugin_button.clicked.connect(signals.import_plugin.emit)
+
+    def _construct_layout(self):
+        header_widget = QtWidgets.QWidget()
+        header_layout = QtWidgets.QHBoxLayout()
+        header_layout.setAlignment(QtCore.Qt.AlignLeft)
+        header_layout.addWidget(header("Plugins:"))
+        header_layout.addWidget(self.import_plugin_button)
+        header_widget.setLayout(header_layout)
+
+        # Overall Layout
+        layout = QtWidgets.QVBoxLayout()
+        layout.setAlignment(QtCore.Qt.AlignTop)
+        layout.addWidget(header_widget)
+        self.setLayout(layout)
 class ActivityBiosphereWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super(ActivityBiosphereWidget, self).__init__(parent)

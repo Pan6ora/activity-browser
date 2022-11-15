@@ -125,5 +125,12 @@ class Signals(QObject):
     # Metadata
     metadata_changed = Signal(tuple)  # key
 
+    # Plugins
+    import_plugin = Signal()
+    remove_plugin = Signal(str)
+    add_plugin = Signal(str)
+    reload_plugins = Signal()
+    plugin_imported = Signal(object, str)
+    plugins_changed = Signal()
 
 signals = Signals()

@@ -3,6 +3,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from shutil import rmtree
 import shutil
 from typing import Optional
 
@@ -255,6 +256,8 @@ class ProjectSettings(BaseSettings):
     def remove_plugin(self, plugin_name: str) -> None:
         """ When a plugin is deleted from a project, the settings are also deleted.
         """
+        plugin_path = "{}/{}".format(bw.projects.request_directory("plugins"), plugin_name)
+        rmtree(plugin_path)
         self.settings["plugins_list"].pop(plugin_name, None)
         self.write_settings()
         signals.plugins_changed.emit()

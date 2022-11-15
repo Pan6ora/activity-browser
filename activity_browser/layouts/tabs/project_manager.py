@@ -167,6 +167,7 @@ class DatabaseWidget(QtWidgets.QWidget):
         self.table.setVisible(not no_databases)
         self.label_change_readonly.setVisible(not no_databases)
 
+
 class PluginWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent)

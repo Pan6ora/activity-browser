@@ -42,6 +42,7 @@ class ProjectTab(QtWidgets.QWidget):
         signals.project_selected.connect(self.change_project)
         signals.database_selected.connect(self.update_widgets)
         signals.database_changed.connect(self.update_widgets)
+        signals.plugins_changed.connect(self.update_widgets)
 
     def change_project(self):
         self.update_widgets()
@@ -169,6 +170,8 @@ class DatabaseWidget(QtWidgets.QWidget):
 class PluginWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent)
+        self.table = PluginsTable()
+
         # Buttons
         self.import_plugin_button = QtWidgets.QPushButton(qicons.import_plugin, "Import")
         self.import_plugin_button.setToolTip('Import a new plugin')
@@ -191,7 +194,14 @@ class PluginWidget(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout()
         layout.setAlignment(QtCore.Qt.AlignTop)
         layout.addWidget(header_widget)
+        layout.addWidget(self.table)
         self.setLayout(layout)
+        self.table.model.sync()
+
+    def update_widget(self):
+        no_databases = self.table.rowCount() == 0
+        self.table.setVisible(not no_databases)
+
 class ActivityBiosphereWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super(ActivityBiosphereWidget, self).__init__(parent)

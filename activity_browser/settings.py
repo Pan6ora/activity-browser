@@ -172,6 +172,7 @@ class ProjectSettings(BaseSettings):
         """
         signals.project_selected.connect(self.reset_for_project_selection)
         signals.delete_project.connect(self.reset_for_project_selection)
+        signals.remove_plugin.connect(self.remove_plugin)
         signals.plugin_imported.connect(self.add_plugin)
 
     @classmethod

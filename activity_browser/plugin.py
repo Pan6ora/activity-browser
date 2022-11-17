@@ -5,6 +5,12 @@ class Plugin(object):
         self.infos = infos
 
     @abstractmethod
+    def load(self):
+        """Code to execute on every plugin import
+        """
+        return
+
+    @abstractmethod
     def initialize(self):
         """Code to execute on first plugin import
         """

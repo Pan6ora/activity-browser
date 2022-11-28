@@ -99,6 +99,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.connect_signals()
 
+    def closeEvent(self,event):
+        for plugin in self.plugins.keys():
+            print("Closing plugin {}".format(plugin))
+            self.plugins[plugin].close()
+
     def connect_signals(self):
         # Keyboard shortcuts
         self.shortcut_debug = QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+D"), self)

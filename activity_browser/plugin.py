@@ -11,6 +11,12 @@ class Plugin(object):
         return
 
     @abstractmethod
+    def close(self):
+        """Code to execute when activity browser get closed
+        """
+        return
+
+    @abstractmethod
     def initialize(self):
         """Code to execute on first plugin import
         """

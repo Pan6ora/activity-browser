@@ -17,12 +17,6 @@ class Plugin(object):
         return
 
     @abstractmethod
-    def initialize(self):
-        """Code to execute on first plugin import
-        """
-        return
-
-    @abstractmethod
     def remove(self):
         """Code to execute on plugin deletion
         """

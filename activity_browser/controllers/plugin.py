@@ -21,5 +21,4 @@ class PluginController(QObject):
 
     def plugin_imported(self, plugin, name):
         plugin.load()
-        plugin.initialize()
 

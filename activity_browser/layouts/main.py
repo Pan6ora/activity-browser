@@ -13,17 +13,17 @@ from ..ui.statusbar import Statusbar
 from ..ui.style import header
 from ..ui.utils import StdRedirector
 from .panels import LeftPanel, RightPanel
-from ..settings import project_settings, ab_settings
 from ..signals import signals
 
 
 class MainWindow(QtWidgets.QMainWindow):
     DEFAULT_NO_METHOD = 'No method selected yet'
 
-    def __init__(self):
+    def __init__(self, parent):
         super(MainWindow, self).__init__(None)
 
         self.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        self.parent = parent
 
         # Window title
         self.setWindowTitle("Activity Browser")
@@ -95,64 +95,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.status_bar = Statusbar(self)
         self.setStatusBar(self.status_bar)
 
-        self.plugins = {}
-
         self.connect_signals()
 
     def closeEvent(self,event):
-        for plugin in self.plugins.keys():
-            print("Closing plugin {}".format(plugin))
-            self.plugins[plugin].close()
+        self.parent.close()
 
     def connect_signals(self):
         # Keyboard shortcuts
         self.shortcut_debug = QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+D"), self)
         self.shortcut_debug.activated.connect(self.toggle_debug_window)
-        signals.reload_plugins.connect(self.reload_plugins)
-        signals.project_selected.connect(self.reload_plugins)
-        signals.remove_plugin.connect(self.remove_plugin)
-        signals.add_plugin.connect(self.add_plugin)
 
-    def remove_plugin(self, name):
-        # Apply plugin's remove() function
-        self.plugins[name].remove()
-        # Close plugin tabs
-        self.close_plugin_tabs(name)
-        # Remove plugin object for plugins dict
-        self.plugins.pop(name)
-        # Remove plugin folder
-        plugin_dir = bw.projects.request_directory("plugins/{}".format(name))
-        shutil.rmtree(plugin_dir)
-    
-    def import_plugin(self, name):
-        """ load given plugin package and return Plugin instance
-        """
-        try:
-            plugins_dir = ab_settings.plugins_dir
-            plugin_lib = importlib.import_module(name, plugins_dir)
-            importlib.reload(plugin_lib)
-            print("Loading plugin {}".format(name))
-            return plugin_lib.Plugin()
-        except:
-            print("Error: Import of plugin {} failed".format(name))
-            print(traceback.format_exc())
-
-    def add_plugin(self, name):
-        """ add or reload tabs of the given plugin
-        """
-        self.close_plugin_tabs(name)
-        plugin = self.import_plugin(name)
-        plugin.load()
-        self.plugins[name] = plugin
-        for tab in plugin.tabs:
-            self.add_tab_to_panel(tab, plugin.infos["name"], tab.panel)
-
-    def reload_plugins(self):
-        """ close all plugins tabs then import all plugins tabs
-        """
-        sys.path.append(ab_settings.plugins_dir)
-        for name in project_settings.get_plugins_list():
-            self.add_plugin(name)
 
     def toggle_debug_window(self):
         """Toggle between any window and the debug window."""
@@ -174,10 +126,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_tab_to_panel(self, obj, label, side):
         panel = self.left_panel if side == 'left' else self.right_panel
         panel.add_tab(obj, label)
-        
-    def close_plugin_tabs(self, plugin):
-        for panel in (self.left_panel, self.right_panel):
-            panel.close_plugin(plugin)
 
     def select_tab(self, obj, side):
         panel = self.left_panel if side == 'left' else self.right_panel

@@ -221,20 +221,22 @@ class ProjectSettings(BaseSettings):
             self.settings.update(self.process_brightway_databases())
             self.write_settings()
         if "plugins_list" not in self.settings:
-            self.settings.update({"plugins_list":{}})
+            self.settings.update({"plugins_list":()})
             self.write_settings()
 
     def connect_signals(self):
         """ Reload the project settings whenever a project switch occurs.
         """
         signals.project_selected.connect(self.reset_for_project_selection)
+        signals.plugin_selected.connect(self.add_plugin)
+        signals.plugin_deselected.connect(self.remove_plugin)
 
     @classmethod
     def get_default_settings(cls) -> dict:
         """ Return default empty settings dictionary.
         """
         settings = cls.process_brightway_databases()
-        settings["plugins_list"] = {}
+        settings["plugins_list"] = ()
         return settings
 
     @staticmethod
@@ -286,29 +288,20 @@ class ProjectSettings(BaseSettings):
         iterator = self.settings.get("read-only-databases", {}).items()
         return (name for name, ro in iterator if not ro and name != "biosphere3")
 
-    def add_plugin(self, plugin, name):
+    def add_plugin(self, name: str):
         """ Add a plugin to settings
         """
-        self.settings["plugins_list"][name] = plugin.infos
+        self.settings["plugins_list"].append(name)
         self.write_settings()
-        signals.add_plugin.emit(name)
-        signals.plugins_changed.emit()
 
-    def remove_plugin(self, plugin_name: str) -> None:
-        """ When a plugin is deleted from a project, the settings are also deleted.
+    def remove_plugin(self, name: str) -> None:
+        """ When a plugin is deselected from a project, remove it from settings
         """
-        self.settings["plugins_list"].pop(plugin_name, None)
+        self.settings["plugins_list"].pop(name)
         self.write_settings()
-        signals.plugins_changed.emit()
 
     def get_plugins_list(self):
         """ Return a list of plugins names
-        """
-        list = [ n for n in self.settings["plugins_list"].keys() ]
-        return list
-
-    def get_plugins(self):
-        """ Return the dictionary containing plugins infos
         """
         return self.settings["plugins_list"]
 

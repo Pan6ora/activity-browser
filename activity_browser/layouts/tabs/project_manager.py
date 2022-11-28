@@ -173,22 +173,17 @@ class PluginWidget(QtWidgets.QWidget):
         super().__init__(parent)
         self.table = PluginsTable()
 
-        # Buttons
-        self.import_plugin_button = QtWidgets.QPushButton(qicons.import_plugin, "Import")
-        self.import_plugin_button.setToolTip('Import a new plugin')
-
         self._construct_layout()
         self._connect_signals()
 
     def _connect_signals(self):
-        self.import_plugin_button.clicked.connect(signals.import_plugin.emit)
+        pass
 
     def _construct_layout(self):
         header_widget = QtWidgets.QWidget()
         header_layout = QtWidgets.QHBoxLayout()
         header_layout.setAlignment(QtCore.Qt.AlignLeft)
         header_layout.addWidget(header("Plugins:"))
-        header_layout.addWidget(self.import_plugin_button)
         header_widget.setLayout(header_layout)
 
         # Overall Layout

@@ -13,7 +13,7 @@ from ..ui.statusbar import Statusbar
 from ..ui.style import header
 from ..ui.utils import StdRedirector
 from .panels import LeftPanel, RightPanel
-from ..settings import project_settings
+from ..settings import project_settings, ab_settings
 from ..signals import signals
 
 
@@ -128,7 +128,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """ load given plugin package and return Plugin instance
         """
         try:
-            plugins_dir = bw.projects.request_directory("plugins")
+            plugins_dir = ab_settings.plugins_dir
             plugin_lib = importlib.import_module(name, plugins_dir)
             importlib.reload(plugin_lib)
             print("Loading plugin {}".format(name))
@@ -150,7 +150,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def reload_plugins(self):
         """ close all plugins tabs then import all plugins tabs
         """
-        sys.path.append(bw.projects.request_directory("plugins"))
+        sys.path.append(ab_settings.plugins_dir)
         for name in project_settings.get_plugins_list():
             self.add_plugin(name)
 

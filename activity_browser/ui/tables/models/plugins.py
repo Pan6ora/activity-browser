@@ -12,7 +12,7 @@ from PySide2.QtCore import Qt, QModelIndex, Slot
 from PySide2.QtWidgets import QApplication
 
 from activity_browser.bwutils import AB_metadata, commontasks as bc
-from activity_browser.settings import project_settings
+from activity_browser.settings import project_settings, ab_settings
 from activity_browser.signals import signals
 from .base import PandasModel, DragPandasModel
 
@@ -31,8 +31,8 @@ class PluginsModel(PandasModel):
         return self._plugins.iat[idx.row(), 0]
 
     def sync(self):
-        plugins = [p for p in project_settings.get_plugins().keys()]
-        data = [p for p in project_settings.get_plugins().values()]
+        plugins = [p for p in ab_settings.get_plugins().keys()]
+        data = [p for p in ab_settings.get_plugins().values()]
         self._plugins = pd.DataFrame(plugins, columns=["plugin"])
         self._dataframe = pd.DataFrame(data, columns=self.HEADERS)
         self.updated.emit()

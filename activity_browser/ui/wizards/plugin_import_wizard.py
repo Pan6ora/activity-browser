@@ -14,6 +14,7 @@ from PySide2.QtCore import Signal, Slot
 
 from ...signals import signals
 from ..style import style_group_box
+from ...settings import ab_settings
 
 
 class PluginImportWizard(QtWidgets.QWizard):
@@ -284,14 +285,15 @@ class MainWorkerThread(QtCore.QThread):
                 importlib.reload(metadata)
                 plugin_name = metadata.infos['name']
                 # create plugins folder if necessary
-                target_dir = bw.projects.request_directory("plugins/{}".format(plugin_name))
+                target_dir = "{}/{}".format(ab_settings.plugins_dir,plugin_name)
+                if not os.path.isdir(target_dir):
+                    os.makedirs(target_dir, exist_ok=True)
                 # empty plugin directory
                 rmtree(target_dir)
                 # copy plugin content into folder
                 copytree(temp_dir, target_dir+"/")
                 # setup plugin
-                plugins_dir = bw.projects.request_directory("plugins")
-                plugin_lib = importlib.import_module(plugin_name, plugins_dir)
+                plugin_lib = importlib.import_module(plugin_name, ab_settings.plugins_dir)
                 self.plugin = plugin_lib.Plugin()
             except:
                 import_signals.loading_failed.emit()

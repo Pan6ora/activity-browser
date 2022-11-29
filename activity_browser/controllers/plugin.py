@@ -39,22 +39,24 @@ class PluginController(QObject):
         """ load given plugin package and return Plugin instance
         """
         try:
+            print("Loading plugin {}".format(name))
             plugins_dir = ab_settings.plugins_dir
             plugin_lib = importlib.import_module(name, plugins_dir)
             importlib.reload(plugin_lib)
-            print("Loading plugin {}".format(name))
             return plugin_lib.Plugin()
         except:
             print("Error: Import of plugin {} failed".format(name))
             print(traceback.format_exc())
 
     def remove_plugin(self, name):
-        # Apply plugin's remove() function
-        self.plugins[name].remove()
-        # Close plugin tabs
-        self.close_plugin_tabs(name)
-        # Remove plugin object for plugins dict
-        self.plugins.pop(name)
+        if name in self.plugins.keys():
+            print("Removing plugin {}".format(name))
+            # Apply plugin's remove() function
+            self.plugins[name].remove()
+            # Close plugin tabs
+            self.close_plugin_tabs(name)
+            # Remove plugin object from plugins dict
+            del self.plugins[name]
 
     def add_plugin(self, name):
         """ add or reload tabs of the given plugin
@@ -83,5 +85,5 @@ class PluginController(QObject):
             panel.close_plugin(plugin)
 
     def close_plugins(self):
-        for plugin in self.plugins:
+        for plugin in self.plugins.values():
             plugin.close()

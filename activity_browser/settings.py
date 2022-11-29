@@ -295,8 +295,9 @@ class ProjectSettings(BaseSettings):
     def remove_plugin(self, name: str) -> None:
         """ When a plugin is deselected from a project, remove it from settings
         """
-        self.settings["plugins_list"].remove(name)
-        self.write_settings()
+        if name in self.settings["plugins_list"]:
+            self.settings["plugins_list"].remove(name)
+            self.write_settings()
 
     def get_plugins_list(self):
         """ Return a list of plugins names

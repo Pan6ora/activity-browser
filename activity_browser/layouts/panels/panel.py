@@ -103,5 +103,5 @@ class ABTab(QtWidgets.QTabWidget):
         """close tab related to plugin."""
         try:
             self.close_tab_by_tab_name(name)   
-        except AssertionError:
+        except:
             pass

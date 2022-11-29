@@ -4,7 +4,6 @@ import traceback
 import sys
 import shutil
 
-import brightway2 as bw
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from ..ui.icons import qicons

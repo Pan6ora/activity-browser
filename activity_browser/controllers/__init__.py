@@ -13,9 +13,9 @@ controllers = {
     "exchange_controller": ExchangeController,
     "database_controller": DatabaseController,
     "parameter_controller": ParameterController,
+    "plugin_controller": PluginController,
     "project_controller": ProjectController,
     "cs_controller": CSetupController,
     "ia_controller": ImpactCategoryController,
     "utils_controller": UtilitiesController,
-    "plugin_controller": PluginController,
 }

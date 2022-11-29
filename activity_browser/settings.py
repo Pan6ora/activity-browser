@@ -77,7 +77,7 @@ class ABSettings(BaseSettings):
         self.connect_signals()
 
     def connect_signals(self):
-        signals.remove_plugin.connect(self.remove_plugin)
+        signals.delete_plugin.connect(self.remove_plugin)
         signals.plugin_imported.connect(self.add_plugin)
 
     @staticmethod
@@ -167,14 +167,11 @@ class ABSettings(BaseSettings):
         """
         self.settings["plugins_list"][name] = plugin.infos
         self.write_settings()
-        signals.add_plugin.emit(name)
         signals.plugins_changed.emit()
 
     def remove_plugin(self, plugin_name: str) -> None:
         """ When a plugin is deleted from a project, the settings are also deleted.
         """
-        plugin_path = "{}/{}".format(self.plugins_dir, plugin_name)
-        rmtree(plugin_path)
         self.settings["plugins_list"].pop(plugin_name, None)
         self.write_settings()
         signals.plugins_changed.emit()
@@ -229,6 +226,7 @@ class ProjectSettings(BaseSettings):
         """
         signals.project_selected.connect(self.reset_for_project_selection)
         signals.plugin_selected.connect(self.add_plugin)
+        signals.delete_plugin.connect(self.remove_plugin)
         signals.plugin_deselected.connect(self.remove_plugin)
 
     @classmethod

@@ -2,7 +2,7 @@
 import sys
 import importlib.util
 import traceback
-import shutil
+from shutil import rmtree
 
 from PySide2.QtCore import QObject, Slot
 
@@ -26,6 +26,8 @@ class PluginController(QObject):
         signals.project_selected.connect(self.reload_plugins)
         signals.plugin_selected.connect(self.add_plugin)
         signals.plugin_deselected.connect(self.remove_plugin)
+        signals.delete_plugin.connect(self.remove_plugin)
+        signals.delete_plugin.connect(self.delete_plugin)
 
     @Slot(name="openImportWizard")
     def import_plugin_wizard(self) -> None:
@@ -70,6 +72,11 @@ class PluginController(QObject):
         sys.path.append(ab_settings.plugins_dir)
         for name in project_settings.get_plugins_list():
             self.add_plugin(name)
+
+    def delete_plugin(self, name):
+        print("Deleting plugin {}".format(name))
+        plugin_path = "{}/{}".format(ab_settings.plugins_dir, name)
+        rmtree(plugin_path)
 
     def close_plugin_tabs(self, plugin):
         for panel in (self.window.left_panel, self.window.right_panel):

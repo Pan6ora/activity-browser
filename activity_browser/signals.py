@@ -127,8 +127,7 @@ class Signals(QObject):
 
     # Plugins
     import_plugin = Signal()
-    remove_plugin = Signal(str)
-    add_plugin = Signal(str)
+    delete_plugin = Signal(str)
     plugin_imported = Signal(object, str)
     plugins_changed = Signal()
     plugin_selected = Signal(str)

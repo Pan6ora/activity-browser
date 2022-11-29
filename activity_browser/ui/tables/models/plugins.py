@@ -17,7 +17,7 @@ from activity_browser.signals import signals
 from .base import PandasModel, DragPandasModel
 
 class PluginsModel(PandasModel):
-    HEADERS = ["name", "author", "version"]
+    HEADERS = ["name", "selected", "author", "version"]
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -26,13 +26,17 @@ class PluginsModel(PandasModel):
         signals.parameters_changed.connect(self.sync)
         signals.plugins_changed.connect(self.sync)      
 
-    def get_plugin(self, proxy: QModelIndex) -> str:
+    def get_plugin_name(self, proxy: QModelIndex) -> str:
         idx = self.proxy_to_source(proxy)
-        return self._plugins.iat[idx.row(), 0]
+        return self._dataframe.iat[idx.row(), 0]
 
     def sync(self):
-        plugins = [p for p in ab_settings.get_plugins().keys()]
-        data = [p for p in ab_settings.get_plugins().values()]
-        self._plugins = pd.DataFrame(plugins, columns=["plugin"])
+        data = []
+        for plugin in ab_settings.get_plugins().values() :
+            if plugin["name"] in project_settings.get_plugins_list():
+                plugin["selected"] = 1
+            else:
+                plugin["selected"] = 0
+            data.append(plugin)
         self._dataframe = pd.DataFrame(data, columns=self.HEADERS)
         self.updated.emit()

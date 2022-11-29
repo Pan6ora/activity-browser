@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+import sys
+import importlib.util
+import traceback
+import shutil
+
 from PySide2.QtCore import QObject, Slot
 
 from ..ui.wizards.plugin_import_wizard import PluginImportWizard
@@ -14,11 +19,10 @@ class PluginController(QObject):
         # {plugin_name: <plugin_object>, ...}
         self.plugins = {}
 
-        signals.import_plugin.connect(self.import_plugin_wizard)
-
         self.connect_signals()
 
     def connect_signals(self):
+        signals.import_plugin.connect(self.import_plugin_wizard)
         signals.project_selected.connect(self.reload_plugins)
         signals.plugin_selected.connect(self.add_plugin)
         signals.plugin_deselected.connect(self.remove_plugin)
@@ -58,7 +62,7 @@ class PluginController(QObject):
         plugin.load()
         self.plugins[name] = plugin
         for tab in plugin.tabs:
-            self.add_tab_to_panel(tab, plugin.infos["name"], tab.panel)
+            self.window.add_tab_to_panel(tab, plugin.infos["name"], tab.panel)
 
     def reload_plugins(self):
         """ close all plugins tabs then import all plugins tabs
@@ -68,7 +72,7 @@ class PluginController(QObject):
             self.add_plugin(name)
 
     def close_plugin_tabs(self, plugin):
-        for panel in (self.left_panel, self.right_panel):
+        for panel in (self.window.left_panel, self.window.right_panel):
             panel.close_plugin(plugin)
 
     def close_plugins(self):

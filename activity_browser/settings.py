@@ -218,7 +218,7 @@ class ProjectSettings(BaseSettings):
             self.settings.update(self.process_brightway_databases())
             self.write_settings()
         if "plugins_list" not in self.settings:
-            self.settings.update({"plugins_list":()})
+            self.settings.update({"plugins_list":[]})
             self.write_settings()
 
     def connect_signals(self):
@@ -234,7 +234,7 @@ class ProjectSettings(BaseSettings):
         """ Return default empty settings dictionary.
         """
         settings = cls.process_brightway_databases()
-        settings["plugins_list"] = ()
+        settings["plugins_list"] = []
         return settings
 
     @staticmethod

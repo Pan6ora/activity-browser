@@ -35,9 +35,19 @@ class PluginsTable(ABDataFrameView):
         menu = QtWidgets.QMenu(self)
         menu.addAction(
             qicons.delete, "Delete plugin",
-            lambda: signals.delete_plugin.emit(self.selected_plugin)
+            self.removePluginConfirm
         )
         menu.exec_(event.globalPos())
+
+    def removePluginConfirm(self):
+        msgBox = QMessageBox()
+        msgBox.setText("Delete plugin from Activity Browser?")
+        msgBox.setInformativeText("The plugin will be unavailable for any project.")
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msgBox.setDefaultButton(QMessageBox.Cancel)
+        ret = msgBox.exec_()
+        if ret == QMessageBox.Ok:
+            signals.delete_plugin.emit(self.selected_plugin)
 
     def mousePressEvent(self, e):
         """ A single mouseclick should trigger the 'read-only' column to alter

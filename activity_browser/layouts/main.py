@@ -104,7 +104,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.shortcut_debug = QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+D"), self)
         self.shortcut_debug.activated.connect(self.toggle_debug_window)
 
-
     def toggle_debug_window(self):
         """Toggle between any window and the debug window."""
         if self.stacked.currentWidget() != self.debug_widget:

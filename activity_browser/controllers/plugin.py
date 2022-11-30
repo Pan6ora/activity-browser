@@ -78,7 +78,7 @@ class PluginController(QObject):
 
     def close_plugin_tabs(self, plugin):
         for panel in (self.window.left_panel, self.window.right_panel):
-            panel.close_plugin(plugin)
+            panel.close_tab_by_tab_name(plugin)
 
     def reload_plugins(self):
         """ close all plugins tabs then import all plugins tabs

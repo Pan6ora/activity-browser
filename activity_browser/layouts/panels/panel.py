@@ -98,10 +98,3 @@ class ABTab(QtWidgets.QTabWidget):
         open_tab_count = len(self.tabs)
         for i in reversed(range(open_tab_count)):
             self.close_tab(i)
-
-    def close_plugin(self, name):
-        """close tab related to plugin."""
-        try:
-            self.close_tab_by_tab_name(name)   
-        except:
-            pass

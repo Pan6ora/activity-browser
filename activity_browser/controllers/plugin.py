@@ -51,7 +51,7 @@ class PluginController(QObject):
     def remove_plugin(self, name):
         if name in self.plugins.keys():
             print("Removing plugin {}".format(name))
-            # Apply plugin's remove() function
+            # Apply plugin remove() function
             self.plugins[name].remove()
             # Close plugin tabs
             self.close_plugin_tabs(name)
@@ -61,19 +61,15 @@ class PluginController(QObject):
     def add_plugin(self, name):
         """ add or reload tabs of the given plugin
         """
-        self.close_plugin_tabs(name)
+        # Create plugin object
         plugin = self.import_plugin(name)
+        # Apply pluin load() function
         plugin.load()
+        # Add plugin object to plugin dict
         self.plugins[name] = plugin
+        # Add plugins tabs
         for tab in plugin.tabs:
             self.window.add_tab_to_panel(tab, plugin.infos["name"], tab.panel)
-
-    def reload_plugins(self):
-        """ close all plugins tabs then import all plugins tabs
-        """
-        sys.path.append(ab_settings.plugins_dir)
-        for name in project_settings.get_plugins_list():
-            self.add_plugin(name)
 
     def delete_plugin(self, name):
         print("Deleting plugin {}".format(name))
@@ -83,6 +79,16 @@ class PluginController(QObject):
     def close_plugin_tabs(self, plugin):
         for panel in (self.window.left_panel, self.window.right_panel):
             panel.close_plugin(plugin)
+
+    def reload_plugins(self):
+        """ close all plugins tabs then import all plugins tabs
+        """
+        plugins_list = [name for name in self.plugins.keys()]   # copy plugins list
+        for name in plugins_list:
+            self.remove_plugin(name)
+        sys.path.append(ab_settings.plugins_dir)
+        for name in project_settings.get_plugins_list():
+            self.add_plugin(name)
 
     def close_plugins(self):
         for plugin in self.plugins.values():

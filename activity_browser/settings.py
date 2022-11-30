@@ -71,7 +71,7 @@ class ABSettings(BaseSettings):
         super().__init__(ab_dir.user_data_dir, filename)
 
         if "plugins_list" not in self.settings:
-            self.settings.update({"plugins_list":self.process_plugins()})
+            self.settings.update({"plugins_list":{}})
             self.write_settings()
 
         self.connect_signals()
@@ -98,7 +98,7 @@ class ABSettings(BaseSettings):
         return {
             "custom_bw_dir": self.get_default_directory(),
             "startup_project": self.get_default_project_name(),
-            "plugins_list": self.process_plugins()
+            "plugins_list": {}
         }
 
     @property
@@ -146,21 +146,6 @@ class ABSettings(BaseSettings):
             return next(iter(bw.projects)).name
         else:
             return None
-
-    def process_plugins(self) -> dict:
-        """ Scan project folder to find plugins, create plugin list and return as dictionary.
-        """
-        plugins_list = {}
-        plugins_path = self.plugins_dir
-        if not os.path.isdir(plugins_path):
-            os.makedirs(plugins_path, exist_ok=True)
-        sys.path.append(plugins_path)
-        plugins = [f.path for f in os.scandir(plugins_path) if f.is_dir()]
-        for plugin_name in plugins:
-            plugin_lib = importlib.import_module(plugin_name)
-            plugin = plugin_lib.Plugin()
-            plugins_list[plugin_name] = plugin.infos
-        return plugins_list
 
     def add_plugin(self, plugin, name):
         """ Add a plugin to settings

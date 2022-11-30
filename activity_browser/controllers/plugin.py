@@ -26,7 +26,6 @@ class PluginController(QObject):
         signals.project_selected.connect(self.reload_plugins)
         signals.plugin_selected.connect(self.add_plugin)
         signals.plugin_deselected.connect(self.remove_plugin)
-        signals.delete_plugin.connect(self.remove_plugin)
         signals.delete_plugin.connect(self.delete_plugin)
 
     @Slot(name="openImportWizard")
@@ -49,14 +48,13 @@ class PluginController(QObject):
             print(traceback.format_exc())
 
     def remove_plugin(self, name):
-        if name in self.plugins.keys():
-            print("Removing plugin {}".format(name))
-            # Apply plugin remove() function
-            self.plugins[name].remove()
-            # Close plugin tabs
-            self.close_plugin_tabs(name)
-            # Remove plugin object from plugins dict
-            del self.plugins[name]
+        print("Removing plugin {}".format(name))
+        # Apply plugin remove() function
+        self.plugins[name].remove()
+        # Close plugin tabs
+        self.close_plugin_tabs(name)
+        # Remove plugin object from plugins dict
+        del self.plugins[name]
 
     def add_plugin(self, name):
         """ add or reload tabs of the given plugin
@@ -73,6 +71,8 @@ class PluginController(QObject):
 
     def delete_plugin(self, name):
         print("Deleting plugin {}".format(name))
+        if name in self.plugins.keys():
+            self.remove_plugin(name)
         plugin_path = "{}/{}".format(ab_settings.plugins_dir, name)
         rmtree(plugin_path)
 

@@ -15,7 +15,7 @@ class PluginsTable(ABDataFrameView):
         super().__init__(parent)
         self.verticalHeader().setVisible(False)
         self.setSelectionMode(QtWidgets.QTableView.SingleSelection)
-        self.setItemDelegateForColumn(1, CheckboxDelegate(self))
+        self.setItemDelegateForColumn(0, CheckboxDelegate(self))
         self.setSizePolicy(QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Preferred,
             QtWidgets.QSizePolicy.Maximum
@@ -26,6 +26,7 @@ class PluginsTable(ABDataFrameView):
     def _connect_signals(self):
         self.model.updated.connect(self.update_proxy_model)
         self.model.updated.connect(self.custom_view_sizing)
+        self.model.updated.connect(self.resizeColumnsToContents)
 
     def contextMenuEvent(self, event) -> None:
         if self.indexAt(event.pos()).row() == -1:
@@ -49,7 +50,7 @@ class PluginsTable(ABDataFrameView):
         """
         if e.button() == QtCore.Qt.LeftButton:
             proxy = self.indexAt(e.pos())
-            if proxy.column() == 1:
+            if proxy.column() == 0:
                 new_value = not bool(proxy.data())  
                 plugin_name = self.model.get_plugin_name(proxy)
                 if new_value:

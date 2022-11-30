@@ -183,7 +183,7 @@ class PluginWidget(QtWidgets.QWidget):
         header_widget = QtWidgets.QWidget()
         header_layout = QtWidgets.QHBoxLayout()
         header_layout.setAlignment(QtCore.Qt.AlignLeft)
-        header_layout.addWidget(header("Plugins:"))
+        header_layout.addWidget(header("Available plugins:"))
         header_widget.setLayout(header_layout)
 
         # Overall Layout

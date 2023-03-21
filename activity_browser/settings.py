@@ -7,6 +7,7 @@ from shutil import rmtree
 import shutil
 import importlib
 from typing import Optional
+from PySide2.QtWidgets import QMessageBox
 
 import appdirs
 import brightway2 as bw
@@ -66,7 +67,7 @@ class ABSettings(BaseSettings):
 
         if not os.path.isdir(ab_dir.user_data_dir):
             os.makedirs(ab_dir.user_data_dir, exist_ok=True)
-        self.move_old_settings(ab_dir.user_data_dir, filename)
+        self.update_old_settings(ab_dir.user_data_dir, filename)
 
         super().__init__(ab_dir.user_data_dir, filename)
 
@@ -81,8 +82,8 @@ class ABSettings(BaseSettings):
         signals.plugin_imported.connect(self.add_plugin)
 
     @staticmethod
-    def move_old_settings(directory: str, filename: str) -> None:
-        """ legacy code: This function is only required for compatibility
+    def update_old_settings(directory: str, filename: str) -> None:
+        """ Recycling code to enable backward compatibility: This function is only required for compatibility
         with the old settings file and can be removed in a future release
         """
         file = os.path.join(directory, filename)
@@ -91,11 +92,21 @@ class ABSettings(BaseSettings):
             old_settings = os.path.join(package_dir, "ABsettings.json")
             if os.path.exists(old_settings):
                 shutil.copyfile(old_settings, file)
+        if os.path.isfile(file):
+            with open(file, "r") as current:
+                current_settings = json.load(current)
+            if 'current_bw_dir' not in current_settings:
+                new_settings_content = {'current_bw_dir' : current_settings['custom_bw_dir'],\
+                                    'custom_bw_dirs' : [current_settings['custom_bw_dir']],\
+                                    'startup_project' : current_settings['startup_project']}
+                with open(file, 'w') as new_file:
+                    json.dump(new_settings_content, new_file)
 
     def get_default_settings(self) -> dict:
         """ Using methods from the commontasks file to set default settings
         """
         return {
+            "current_bw_dir": cls.get_default_directory(),
             "custom_bw_dir": self.get_default_directory(),
             "startup_project": self.get_default_project_name(),
             "plugins_list": {}
@@ -105,13 +116,35 @@ class ABSettings(BaseSettings):
     def custom_bw_dir(self) -> str:
         """ Returns the custom brightway directory, or the default
         """
-        return self.settings.get("custom_bw_dir", self.get_default_directory())
+        return self.settings.get("custom_bw_dirs", self.get_default_directory())
+
+    @property
+    def current_bw_dir(self) -> str:
+        """ Returns the current brightway directory
+        """
+        return self.settings.get("current_bw_dir", self.get_default_directory())
+
+    @current_bw_dir.setter
+    def current_bw_dir(self, directory: str) -> None:
+        self.settings["current_bw_dir"] = directory
+        self.write_settings()
 
     @custom_bw_dir.setter
     def custom_bw_dir(self, directory: str) -> None:
         """ Sets the custom brightway directory to `directory`
         """
-        self.settings.update({"custom_bw_dir": directory})
+        if directory not in self.settings["custom_bw_dirs"]:
+            self.settings["custom_bw_dirs"].append(directory)
+            self.write_settings()
+
+    def remove_custom_bw_dir(self, directory: str) -> None:
+        """ Removes the brightway directory to 'directory'
+        """
+        try:
+            self.settings["custom_bw_dirs"].remove(directory)
+            self.write_settings()
+        except KeyError as e:
+            QMessageBox.warning(self, f"Error while attempting to remove a brightway environmental dir: {e}")
 
     @property
     def startup_project(self) -> str:
@@ -120,7 +153,7 @@ class ABSettings(BaseSettings):
         project = self.settings.get(
             "startup_project", self.get_default_project_name()
         )
-        if project not in bw.projects:
+        if project and project not in bw.projects:
             project = self.get_default_project_name()
         return project
 
@@ -134,8 +167,10 @@ class ABSettings(BaseSettings):
     def get_default_directory() -> str:
         """ Returns the default brightway application directory
         """
-        return bw.projects._get_base_directories()[0]
-
+        try:
+            return os.environ['BRIGHTWAY2_DIR']
+        except KeyError:
+            return bw.projects._get_base_directories()[0]
     @staticmethod
     def get_default_project_name() -> Optional[str]:
         """ Returns the default project name.

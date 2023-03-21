@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Iterable, Optional, Union
-
+from PySide2.QtWidgets import QMessageBox, QApplication
 import numpy as np
 import pandas as pd
 import brightway2 as bw
@@ -10,6 +10,7 @@ ca = ContributionAnalysis()
 
 from .commontasks import wrap_text
 from .metadata import AB_metadata
+from .errors import ReferenceFlowValueError
 
 
 class MLCA(object):
@@ -108,6 +109,17 @@ class MLCA(object):
             raise ValueError(
                 "{} is not a known `calculation_setup`.".format(cs_name)
             )
+
+        if sum([v for rf in cs['inv'] for v in rf.values()]) == 0:
+            msg = QMessageBox()
+            msg.setText('Sum of reference flows equals 0')
+            msg.setInformativeText('A value greater than 0 must be provided for at least one reference flow.\n' +
+                                   'Please enter a valid value before calculating LCA results again.')
+            msg.setIcon(QMessageBox.Warning)
+            QApplication.restoreOverrideCursor()
+            msg.exec_()
+            raise ReferenceFlowValueError("Sum of reference flows == 0")
+
         # reference flows and related indexes
         self.func_units = cs['inv']
         self.fu_activity_keys = [list(fu.keys())[0] for fu in self.func_units]
@@ -342,7 +354,7 @@ class Contributions(object):
             2-dimensional array of same shape, with scores normalized.
 
         """
-        scores = contribution_array.sum(axis=1, keepdims=True)
+        scores = abs(contribution_array).sum(axis=1, keepdims=True)
         return contribution_array / scores
 
     def _build_dict(self, C, FU_M_index, rev_dict, limit, limit_type):
@@ -382,6 +394,7 @@ class Contributions(object):
                 cont_per.update({rev_dict[index]: value})
             topcontribution_dict.update({fu_or_method: cont_per})
         return topcontribution_dict
+
 
     @staticmethod
     def get_labels(key_list, fields=None, separator=' | ',
@@ -554,11 +567,14 @@ class Contributions(object):
         joined.reset_index(inplace=True, drop=True)
         return joined
 
-    def inventory_df(self, inventory_type: str):
+    def inventory_df(self, inventory_type: str, columns: set = {'name', 'database', 'code'}):
         """Returns an inventory dataframe with metadata of the given type.
         """
         try:
             data = self.inventory_data[inventory_type]
+            appending = columns.difference(set(data[3]))
+            for clmn in appending:
+                data[3].append(clmn)
         except KeyError:
             raise ValueError(
                 "Type must be either 'biosphere' or 'technosphere', "
@@ -668,10 +684,30 @@ class Contributions(object):
             return self.act_fields if contribution == self.ACT else self.ef_fields
         return aggregator if isinstance(aggregator, list) else [aggregator]
 
+    def _correct_method_index(self, mthd_indx):
+        """ A method for amending the tuples for impact method labels so
+        that all tuples are fully printed.
+
+        NOTE THE AMENDED TUPLES ARE COPIED, THIS SHOULD NOT BE USED TO
+        ASSIGN OR MODIFY THE UNDERLYING DATA STRUCTURES!
+
+        mthd_indx: a list of tuples for the impact method names
+        """
+        method_tuple_length = max([len(k) for k in mthd_indx])
+        conv_dict = dict()
+        for v, mthd in enumerate(mthd_indx):
+            if len(mthd) < method_tuple_length:
+                _l = list(mthd)
+                for i in range(len(mthd), method_tuple_length):
+                    _l.append('')
+                mthd = tuple(_l)
+            conv_dict[mthd] = v
+        return conv_dict
+
     def _contribution_index_cols(self, **kwargs) -> (dict, Optional[Iterable]):
         if kwargs.get("method") is not None:
             return self.mlca.fu_index, self.act_fields
-        return self.mlca.method_index, None
+        return self._correct_method_index(self.mlca.methods), None
 
     def top_elementary_flow_contributions(self, functional_unit=None, method=None,
                                           aggregator=None, limit=5, normalize=False,
@@ -771,3 +807,4 @@ class Contributions(object):
         )
         self.adjust_table_unit(labelled_df, method)
         return labelled_df
+

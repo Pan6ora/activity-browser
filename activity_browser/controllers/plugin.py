@@ -77,3 +77,9 @@ class PluginController(QObject):
             self.remove_plugin(name)
         for name in project_settings.get_plugins_list():
             self.add_plugin(name)
+
+    def close_plugins(self):
+        """ close all plugins
+        """
+        for plugin in self.plugins.values():
+            plugin.close()

@@ -2,7 +2,7 @@ name: stable release
 on:
   push:
     tags:        
-      - '*-pm*' 
+      - '*pm*' 
 
 jobs:
   release:

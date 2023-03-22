@@ -76,7 +76,10 @@ class PluginController(QObject):
         for name in plugins_list:
             self.remove_plugin(name)
         for name in project_settings.get_plugins_list():
-            self.add_plugin(name)
+            try:
+                self.add_plugin(name)
+            except:
+                print(f"Error: plugin {name} not installed")
 
     def close_plugins(self):
         """ close all plugins

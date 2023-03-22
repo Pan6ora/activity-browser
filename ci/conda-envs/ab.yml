@@ -2,6 +2,6 @@ name: ab
 channels:
   - conda-forge
   - cmutel
-  - bsteubing
+  - pan6ora
 dependencies:
   - activity-browser

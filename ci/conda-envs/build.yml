@@ -2,7 +2,7 @@ name: build
 channels:
   - conda-forge
   - cmutel
-  - bsteubing
+  - pan6ora
 dependencies:
   - conda-build
   - anaconda-client

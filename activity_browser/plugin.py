@@ -21,9 +21,3 @@ class Plugin(object):
         """Code to execute when plugin is removed from project
         """
         return
-
-    @abstractmethod
-    def delete(self):
-        """Code to execute on plugin deletion
-        """
-        return

@@ -64,6 +64,12 @@ class ABSettings(BaseSettings):
             os.makedirs(ab_dir.user_data_dir, exist_ok=True)
         self.update_old_settings(ab_dir.user_data_dir, filename)
 
+        # Currently loaded plugins objects as:
+        # {plugin_name: <plugin_object>, ...}
+        # this list is generated at startup and never writen in settings.
+        # it is filled by the plugin controller
+        self.plugins = {}
+
         super().__init__(ab_dir.user_data_dir, filename)
 
     @staticmethod
@@ -191,12 +197,6 @@ class ProjectSettings(BaseSettings):
         # once found, load the settings or just an empty dict.
         self.connect_signals()
         super().__init__(bw.projects.dir, filename)
-
-        # Currently loaded plugins objects as:
-        # {plugin_name: <plugin_object>, ...}
-        # this list is generated at startup and never writen in settings.
-        # it is filled by the plugin controller
-        self.plugins = {}
 
         # https://github.com/LCA-ActivityBrowser/activity-browser/issues/235
         # Fix empty settings file and populate with currently active databases

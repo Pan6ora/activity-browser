@@ -90,6 +90,7 @@ class ABTab(QtWidgets.QTabWidget):
 
     def close_tab_by_tab_name(self, tab_name):
         """Close tab by tab name (key in self.tabs)."""
+        print(self.tabs)
         if tab_name in self.tabs:
             self.close_tab(self.indexOf(self.tabs[tab_name]))
 

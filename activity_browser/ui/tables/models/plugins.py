@@ -32,11 +32,11 @@ class PluginsModel(PandasModel):
 
     def sync(self):
         data = []
-        for name, plugin in ab_settings.plugins.values() :
+        for name, plugin in ab_settings.plugins.items() :
             infos = {
-                "use": plugin["name"] in project_settings.get_plugins_list(),
+                "use": name in project_settings.get_plugins_list(),
                 "name": name,
-                "author": metadata.author(name),
+                "author": metadata.metadata(name)["Author"],
                 "version": metadata.version(name),
             }
             data.append(infos)

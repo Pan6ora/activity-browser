@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+from PySide2.QtWidgets import QMessageBox, QApplication
+
 from ..bwutils import (
-    Contributions, MonteCarloLCA, MLCA, PresamplesMLCA,
-    PresamplesContributions, SuperstructureContributions,
-    SuperstructureMLCA,
+    Contributions, MonteCarloLCA, MLCA,
+    SuperstructureContributions, SuperstructureMLCA,
 )
-
 from bw2calc.errors import BW2CalcError
+import brightway2 as bw
 
+from .errors import ReferenceFlowValueError
 
 def do_LCA_calculations(data: dict):
     """Perform the MLCA calculation."""
@@ -17,18 +19,6 @@ def do_LCA_calculations(data: dict):
         try:
             mlca = MLCA(cs_name)
             contributions = Contributions(mlca)
-        except KeyError as e:
-            raise BW2CalcError("LCA Failed", str(e)).with_traceback(e.__traceback__)
-    elif calculation_type == 'presamples':
-        try:
-            mlca = PresamplesMLCA(cs_name, data.get('data'))
-            contributions = PresamplesContributions(mlca)
-        except IndexError as e:
-            # Occurs when a presamples package is used that refers to old
-            # or non-existing array indices.
-            msg = ("Given scenario package refers to non-existent exchanges."
-                   " It is suggested to remove or edit this package.")
-            raise BW2CalcError(msg, str(e)).with_traceback(e.__traceback__)
         except KeyError as e:
             raise BW2CalcError("LCA Failed", str(e)).with_traceback(e.__traceback__)
     elif calculation_type == 'scenario':
@@ -49,7 +39,7 @@ def do_LCA_calculations(data: dict):
         except KeyError as e:
             raise BW2CalcError("LCA Failed", str(e)).with_traceback(e.__traceback__)
     else:
-        print('Calculation type must be: simple, presamples, or scenario. Given:', cs_name)
+        print('Calculation type must be: simple or scenario. Given:', cs_name)
         raise ValueError
 
     mlca.calculate()

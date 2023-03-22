@@ -61,6 +61,9 @@ class ProjectTab(QtWidgets.QWidget):
         """Splitter sizes need to be reset (for some reason this is buggy if not done like this)"""
         widgets = [self.databases_widget, self.plugins_widget, self.activity_biosphere_widget]
         sizes = [x.sizeHint().height() for x in widgets]
+        tabheight = self.height()
+        if sum(sizes) > tabheight and sizes[1] > 0.75 * tabheight:
+            sizes[0] = sizes[1] // 3
         self.splitter.setSizes(sizes)
 
 
@@ -243,14 +246,14 @@ class ActivityBiosphereWidget(QtWidgets.QWidget):
         self.search_box.setPlaceholderText("Filter by search string")
         self.search_box.returnPressed.connect(self.set_search_term)
 
-        # 2nd search box
-        self.search_box2 = QtWidgets.QLineEdit()
-        self.search_box2.setPlaceholderText("Filter by search string")
-        self.search_box2.returnPressed.connect(self.set_search_term)
-
-        # search logic between both search fields
-        self.logic_dropdown = QtWidgets.QComboBox()
-        self.logic_dropdown.addItems(['AND', 'OR', 'AND NOT'])
+#        # 2nd search box
+#        self.search_box2 = QtWidgets.QLineEdit()
+#        self.search_box2.setPlaceholderText("Filter by search string")
+#        self.search_box2.returnPressed.connect(self.set_search_term)
+#
+#        # search logic between both search fields
+#        self.logic_dropdown = QtWidgets.QComboBox()
+#        self.logic_dropdown.addItems(['AND', 'OR', 'AND NOT'])
 
         # search
         self.search_button = QtWidgets.QToolButton()
@@ -264,12 +267,12 @@ class ActivityBiosphereWidget(QtWidgets.QWidget):
         self.reset_search_button.setToolTip("Clear the search")
         self.reset_search_button.clicked.connect(self.table.reset_search)
         self.reset_search_button.clicked.connect(self.search_box.clear)
-        self.reset_search_button.clicked.connect(self.search_box2.clear)
+#        self.reset_search_button.clicked.connect(self.search_box2.clear)
 
         signals.project_selected.connect(self.search_box.clear)
         self.header_layout.addWidget(self.search_box)
-        self.header_layout.addWidget(self.logic_dropdown)
-        self.header_layout.addWidget(self.search_box2)
+#        self.header_layout.addWidget(self.logic_dropdown)
+#        self.header_layout.addWidget(self.search_box2)
 
         self.header_layout.addWidget(self.search_button)
         self.header_layout.addWidget(self.reset_search_button)
@@ -282,6 +285,6 @@ class ActivityBiosphereWidget(QtWidgets.QWidget):
 
     def set_search_term(self):
         search_term = self.search_box.text()
-        search_term2 = self.search_box2.text()
-        logic = self.logic_dropdown.currentText()
-        self.table.search(search_term, search_term2, logic=logic)
+#        search_term2 = self.search_box2.text()
+#        logic = self.logic_dropdown.currentText()
+        self.table.search(search_term)

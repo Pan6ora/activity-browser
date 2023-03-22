@@ -1,8 +1,8 @@
 name: stable release
 on:
   push:
-    tags:
-      - '*'
+    tags:        
+      - '*pm*' 
 
 jobs:
   release:
@@ -29,7 +29,7 @@ jobs:
         with:
           body: ${{steps.build_changelog.outputs.changelog}}
           artifacts: 'ci/conda-envs/ab.yml'
-          commit: master
+          commit: prod
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up conda-build environment
         uses: conda-incubator/setup-miniconda@v2

@@ -1,9 +1,0 @@
-name: test
-channels:
-  - conda-forge
-  - cmutel
-  - bsteubing
-dependencies:
-  - pytest
-  - pytest-qt
-  - pytest-mock

@@ -1,56 +1,18 @@
-[![conda-forge version](https://img.shields.io/conda/vn/conda-forge/activity-browser.svg)](https://anaconda.org/conda-forge/activity-browser)
-[![bsteubing version](https://img.shields.io/conda/vn/bsteubing/activity-browser.svg)](https://anaconda.org/bsteubing/activity-browser)
-[![Downloads](https://anaconda.org/conda-forge/activity-browser/badges/downloads.svg)](https://anaconda.org/conda-forge/activity-browser)
-![linux](https://raw.githubusercontent.com/vorillaz/devicons/master/!PNG/linux.png)
-![apple](https://raw.githubusercontent.com/vorillaz/devicons/master/!PNG/apple.png)
-![windows](https://raw.githubusercontent.com/vorillaz/devicons/master/!PNG/windows.png)
-[![Pull request tests](https://github.com/LCA-ActivityBrowser/activity-browser/actions/workflows/main.yaml/badge.svg)](https://github.com/LCA-ActivityBrowser/activity-browser/actions/workflows/main.yaml)
-[![Coverage Status](https://coveralls.io/repos/github/LCA-ActivityBrowser/activity-browser/badge.svg?branch=master)](https://coveralls.io/github/LCA-ActivityBrowser/activity-browser?branch=master)
-
-
 # Activity Browser - a GUI for Brightway2
 
-<img src="https://user-images.githubusercontent.com/33026150/54299977-47a9f680-45bc-11e9-81c6-b99462f84d0b.png" width=100%/>
+<img src="plugin-manager.png" width=100%/>
 
 The activity browser is an open source software for Life Cycle Assessment (LCA) that builds on top of the [Brightway2](https://brightway.dev) LCA framework.
 
-## Highlights
+This fork adds a plugin system to Activity Browser to let people create new functionalities to the software and share them easily.
 
-- **Fast LCA calculations** for multiple reference flows and impact categories using [Brightway2](https://brightway.dev) under the hood
-- The AB can be used as a **productivity tool for brightway**: you can model in brightway (python) and see the results in the AB or the other way around - whatever is most convenient for you
-- **Advanced LCA modeling:**
-    - parametrization
-    - advanced foreground and background scenario modeling (e.g. possibility to work with scenarios from Integrated Assessment Models)
-    - define and directly visualize the uncertainties of your input data (including Pedigree Matrix)
-- **Advanced analysis of LCA results:**
-    - Contribution analyses (including aggregation by product name, region or other attributes)
-    - Sankey Diagrams
-    - Monte Carlo Analysis (building upon the fast brightway engine)
-    - Global Sensitivity Analysis
-- **Other features**
-    - interactively explore supply chains using the graph explorer
-
-## Scientific paper
-Please have a look at our scientific paper on the Activity Browser and cite it in your work if it has been useful to you:
-https://doi.org/10.1016/j.simpa.2019.100012
-
-## Youtube tutorials
-Watch our videos on [youtube](https://www.youtube.com/channel/UCsyySKrzEMsRFsWW1Oz-6aA/) to learn how to install and use the Activity Browser.
+**See the [original project](https://github.com/LCA-ActivityBrowser/activity-browser) for the complete README, with installation instructions and full documentation.**
 
 ## Contents
 - [Quickstart](#Quickstart)
-- [Installation](#installation)
-    - [Conda](#conda)
-    - [Configure conda channels](#add-the-conda-forge-channel)
-    - [Install the activity browser with Ecoinvent >=3.9](#install-activity-browser-with-ecoinvent-39)
-    - [Install the activity browser with Ecoinvent <3.9](#install-activity-browser-with-older-ecoinvent-versions-39)
-    - [Recommendations for setting up environments](#recommendations-for-environmental-setups)
-    - [Updating the activity browser](#updating-the-activity-browser)
-    - [Install development version](#install-development-version)
-- [Getting started](#getting-started)
-    - [Running the activity browser](#running-the-activity-browser)
-    - [Importing an LCI database](#importing-an-lci-database)
-- [Contributing](#contributing)
+- [Setup dev environment](#setup-dev-environment)
+- [Running pytest](#running-pytest)
+- [Plugin manager doc](#plugin-manager-doc)
 - [Authors](#authors)
 - [Copyright](#copyright)
 - [License](#authors)
@@ -61,101 +23,222 @@ Watch our videos on [youtube](https://www.youtube.com/channel/UCsyySKrzEMsRFsWW1
 You can install and start the activity-browser like this:
 
 ```bash
-conda create -n ab -c conda-forge activity-browser
+conda create -n ab -c pan6ora -c conda-forge activity-browser
 conda activate ab
 activity-browser
 ```
 
+## Setup dev environment
 
-## Installation
+You will need to have python3 and conda installed (as some dependencies are not on pip).
 
-### Conda
+Then, create the environment with the following commands:
 
-We recommend that you use **conda** to manage your python installation. You can install [Anaconda](https://www.anaconda.com/products/individual) or the more compact [miniconda](https://conda.io/miniconda.html) (Python 3 of course) for your operating system. Installation instructions for miniconda can be found [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html). See also the [conda user guide](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html) or the [Conda cheat sheet](https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf).
-
-Skip this step if you already have a working installation of anaconda or miniconda, but make sure to keep your conda installation up-to-date: `conda update conda`.
-
-#### Add the Conda-Forge channel
-The activity-browser has many dependencies that are managed by the conda-forge [channel](https://conda.io/docs/user-guide/tasks/manage-channels.html). Open a cmd-window or terminal (in Windows you may have to use the Anaconda prompt) and type the following:
-
-```bash
-conda config --prepend channels conda-forge
 ```
-### Install Activity-Browser with Ecoinvent >=3.9
-After prepending the Conda-Forge channel the following line should be executed within the command prompt/terminal to install the Activity-Browser and it's dependencies.
-
-```bash
-conda create -n ab activity-browser
-```
-This will install the Activity-Browser with the latest version of the Brightway2 libraries (currently excluding Brightway2.5 libraries).
-
-### Install Activity-Browser with older Ecoinvent versions (<3.9)
-For a new installation from the conda-forge repository the same initial steps need to be made: Prepending the Conda-Forge repository in the channels, and installing the Activity-Browser and dependencies. After the successful installation, however, two further commands need to be executed before running the Activity-Browser: <i>1)</i> Remove the latest version of the Brightway2 Input-Output library, <i>2)</i> Install an older version of the Brightway2 Input-Output library.
-
-```bash
-conda remove --force bw2io
-conda install bw2io=0.8.7
+conda create -n local_dev -c pan6ora -c conda-forge activity-browser
+conda activate local_dev
+conda remove --force activity-browser
 ```
 
-### Activity-Browser is installed
+This create a conda environment named `local_dev` with all Activity Browser packages, then remove the package activity-browser itself (as we are going to launch it directly from the content of this repository).
 
-At this point the activity-browser and all of its dependencies will be installed in a new conda environment called `ab`. You can change the environment name `ab` to whatever suits you. (Note, Installing for the first time will take a few minutes).
+To start Activity Browser clone the repo, switch to conda environment and run `run-activity-browser.py`.
 
-### Recommendations for environmental setups
-It is recommended that you have a separate conda environment for the activity browser as explained above, but you can also install the activity browser in your root, brightway2 or other existing conda environment if you prefer. Having separate environments for different projects generally reduces unwanted side-effects and incompatibilities between packages. You can still access the same brightway-projects even if you work with different conda environments.
+Note: don't start from `prod` branche as it is only for anaconda deployement. Better create a nex branch from `plugin-manager`. If you need latest changes from the original project, start from the `master` branch and merge `plugin-manager`.
 
-### Biosphere3 linking issues
-If you want to run the Activity-Browser with older versions of Ecoinvent (<3.9) and the Biosphere3 database is already installed, then there will be exchanges in the biosphere3 database that are not compatible with the desired Ecoinvent versions. These Biosphere3 databases will then need to be removed and reinstalled (after changing the bw2io package version) before trying to load the Ecoinvent and other dependent databases back into the Activity-Browser.
+## Running pytest
 
-### Updating the activity browser
+Install pytest to perform automatic testing:
 
-You may want to update the activity browser to receive new features & bugfixes:
-
-```bash
-conda activate ab
-conda update activity-browser
+```
+conda activate local_dev
+conda install pytest pytest-qt
 ```
 
-This will update the activity-browser and all of its dependencies in the conda environment called `ab`.
+If Pytest complains about not finding some packages do the following:
 
-| :warning: The activity browser has dropped support for python versions below `3.8`|
-|---|
-| You should re-install if you have an older installation of the activity browser which doesn't use `python >= 3.8` (you can check with `conda list` or `python --version` in your conda environment). You can remove your existing environment with `conda remove -n ab --all` or choose a new environment name (instead of `ab`). Re-installing will not affect your activity-browser/brightway projects. |
-
-
----
-
-## Getting started
-
-**Watch our videos on [youtube](https://www.youtube.com/channel/UCsyySKrzEMsRFsWW1Oz-6aA/) on how to install and use the Activity Browser and/or read below and in our [Wiki](https://github.com/LCA-ActivityBrowser/activity-browser/wiki).**
-
-### Running the activity browser
-
-First activate the environment where the activity browser is installed:
-
-```bash
-conda activate ab
+```
+conda deactivate
+pip uninstall pytest
+conda activate local_dev
+conda install pytest pytest-qt
 ```
 
-Then simply run `activity-browser` and the application will open.
+Run pytest:
 
-### Importing an LCI database
+```
+pytest
+```
 
-- In the `inventory`-tab there is a button called _"Add default data (biosphere flows and impact categories)"_. Click this button to add the default data. This is equivalent to `brightway2.bw2setup()` in python.
-- After adding the default data, you can import a database with the _"Import Database"_-Button. Follow the instructions of the database import wizard. There are currently three types of imports possible:
-    - Directly from the ecoinvent homepage (ecoinvent login credentials required)
-    - From a 7zip archive
-    - From a directory with ecospold2 files (same as in brightway2)
+## Plugin Manager doc
 
-## Contributing
+### Main characteristics
 
-**Your contribution counts! The AB is a community project.**
+- A plugin is a 7z archive containing a Python library
+- A plugin can add any content in two tabs (Left/Right)
+- Plugins connect to AB through signals
+- Plugins code is stored at AB global scope
+- Plugins can be selected by project
 
-If you have ideas for improvements to the code or documentation or want to propose new features, please take a look at our [contributing guidelines](CONTRIBUTING.md) and open issues and/or pull-requests.
+### Creating a plugin
 
-If you experience problems or are suffering from a specific bug, please [raise an issue](https://github.com/LCA-ActivityBrowser/activity-browser/issues) here on github.
+The best place to start is the [plugin template](https://github.com/Pan6ora/activity-browser-plugin-template). It's code and README will help you to understand how to create a plugin. Two things you may want to remember of are :
+
+**classes**
+
+There are two main classes :
+
+- `Plugin` is the main class defined in the init file of the plugin. It inherit from the `Plugin` class defined in Activity Browser.
+- `PluginTab` is the mother class of every tabs the plugin will add to AB interface (one on each left/right panel).
+
+**hooks**
+
+The plugin class has 4 methods that are run by AB at a certain point :
+
+- `load()` is run each time the plugin is added tp the project or reloaded. It kind of replaces the init method.
+- `close()` is run when AB get closed.Put there the code to end your plugin properly.
+- `remove()` is run when the plugin is removed from the current project. Use it to clean the place.
+- `delete()` is run when the plugin is fully removed from AB.
+
+### The .plugin file
+
+To create and share a plugin, simply put all your code (based on the plugin template) in a 7z archive, then rename it to something like MyAwesomePlugin.plugin
+
+> Note: this behaviour will be dropped in future 2.0 release of the plugin manager in favour of conda packages.
+
+### Storage
+
+**Plugin code**
+
+The code goes to AB data folder. For example on Linux :
+
+```
+/home/user/.local/share/ActivityBrowser/
+plugins/
+    MyFirstPlugin/
+        ...
+    MySecondPlugin/
+        ...
+```
+
+**Plugins list**
+
+To keep track of installed plugins, an entry is added to AB settings :
+
+```json
+/home/user/.local/share/ActivityBrowser/ABsettings.json
+{
+    "custom_bw_dir": "/home/user/.local/share/Brightway3",
+    "plugins_list": {
+        "MyFirstPlugin": {
+            "author": "John Doe",
+            "author_email": "john@doe.com",
+            "description": "This is my first plugin",
+            "name": "MyFirstPlugin",
+            "url": "https://john.doe.com/myfirstplugin",
+            "version": "0.1.0"
+        }
+    },
+    "startup_project": "default"
+}
+```
+
+**Plugins data**
+
+Datas are added per-project. The plugin can add everything it needs in the project folder.
+
+**Project plugins**
+
+To keep track of plugins used in a project, an entry is added to project settings :
+
+```json
+/home/user/.local/share/Brigtway3/default.xxx/AB_project_settings.json
+{
+    "plugins_list": [
+        "MyFirstPlugin",
+        "MySecondPlugin"
+    ],
+    "read-only-databases": {
+        "biosphere3": true,
+        "Idemat": true
+    }
+}
+```
+
+### Signals
+
+6 signals are added to manage plugins. Understanding these is the quickest way to understand how the plugin system works.
+
+**`import_plugin = Signal()`**
+
+trigger : 
+
+- `menu-bar.py` | _Import Plugin..._ menu option
+
+handlers :
+
+- `controllers/plugin.py` | launch import plugin wizard
+
+**`plugin_imported = Signal(object, str)`**
+
+trigger : 
+
+- `plugin_import_wizard.py` | plugin import successfully finished
+
+handlers :
+
+- `settings.py` | add plugin to AB settings
+
+**`delete_plugin = Signal(str)`**
+
+trigger : 
+
+- `tables/plugin.py` | right click > _Delete plugin_ on plugin
+
+handlers :
+
+- `settings.py` | remove from AB settings
+- `controllers/plugin.py` | delete plugin folder & run plugin delete() method
+
+**`plugin_selected = Signal(str)`**
+
+trigger : 
+
+- `tables/plugin.py` | plugin box checked
+
+handlers :
+
+- `settings.py` | add to project settings
+- `controllers/plugin.py` | import plugin & add tabs
+
+**`plugin_deselected = Signal(str)`**
+
+trigger : 
+
+- `tables/plugin.py` | plugin box unchecked
+
+handlers :
+
+- `settings.py` | remove from project settings
+- `controllers/plugin.py` | close plugin tabs & run plugin remove() method
+
+**`plugins_changed = Signal()`**
+
+trigger : 
+
+- `settings.py` | plugins list changed (add or remove)
+
+handlers :
+
+- `tabs/project_manager.py` | update plugins list widget
+- `models/plugins.py` | update plugins list table
 
 ## Authors
+
+### Plugin manager
+- Rémy Le Calloch (remy@lecalloch.net)
+
+### Activity Browser
 - Bernhard Steubing (b.steubing@cml.leidenuniv.nl)
 - Matthijs Vos (m.vos@cml.leidenuniv.nl)
 - Adrian Haas (haasad@ethz.ch)

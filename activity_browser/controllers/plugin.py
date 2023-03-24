@@ -74,7 +74,7 @@ class PluginController(QObject):
         """
         plugins_list = [name for name in self.plugins.keys()]   # copy plugins list
         for name in plugins_list:
-            self.remove_plugin(name)
+            self.close_plugin_tabs(self.plugins[name])
         for name in project_settings.get_plugins_list():
             try:
                 self.add_plugin(name)

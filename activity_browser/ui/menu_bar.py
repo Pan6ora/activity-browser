@@ -15,6 +15,7 @@ class MenuBar(QtWidgets.QMenuBar):
         self.file_menu = QtWidgets.QMenu('&File', self.window)
         self.view_menu = QtWidgets.QMenu('&View', self.window)
         self.windows_menu = QtWidgets.QMenu('&Windows', self.window)
+        self.tools_menu = QtWidgets.QMenu('&Tools', self.window)
         self.help_menu = QtWidgets.QMenu('&Help', self.window)
 
         self.update_biosphere_action = QtWidgets.QAction(
@@ -32,11 +33,13 @@ class MenuBar(QtWidgets.QMenuBar):
         self.addMenu(self.file_menu)
         self.addMenu(self.view_menu)
         self.addMenu(self.windows_menu)
+        self.addMenu(self.tools_menu)
         self.addMenu(self.help_menu)
 
         self.setup_file_menu()
         self.setup_view_menu()
         self.update_windows_menu()
+        self.setup_tools_menu()
         self.setup_help_menu()
         self.connect_signals()
 

@@ -29,6 +29,9 @@ class MenuBar(QtWidgets.QMenuBar):
         self.import_db_action = QtWidgets.QAction(
             qicons.import_db, '&Import database...', None
         )
+        self.manage_plugins_action = QtWidgets.QAction(
+            qicons.plugin, '&Plugins...', None
+        )
 
         self.addMenu(self.file_menu)
         self.addMenu(self.view_menu)
@@ -50,6 +53,7 @@ class MenuBar(QtWidgets.QMenuBar):
         self.update_biosphere_action.triggered.connect(signals.update_biosphere.emit)
         self.export_db_action.triggered.connect(signals.export_database.emit)
         self.import_db_action.triggered.connect(signals.import_database.emit)
+        self.manage_plugins_action.triggered.connect(signals.manage_plugins.emit)
 
     def setup_file_menu(self) -> None:
         """Build the menu for specific importing/export/updating actions."""
@@ -91,6 +95,10 @@ class MenuBar(QtWidgets.QMenuBar):
                 self.window.toggle_debug_window,
             )
 
+    def setup_tools_menu(self) -> None:
+        """Build the tools menu for the menubar."""
+        self.tools_menu.addAction(self.manage_plugins_action)
+        
     def setup_help_menu(self) -> None:
         """Build the help menu for the menubar."""
         self.help_menu.addAction(

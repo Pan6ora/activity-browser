@@ -127,5 +127,6 @@ class Signals(QObject):
     # Plugins
     plugin_selected = Signal(str)
     plugin_deselected = Signal(str)
+    manage_plugins = Signal()
 
 signals = Signals()

@@ -7,6 +7,7 @@ from shutil import rmtree
 
 from PySide2.QtCore import QObject, Slot
 
+from ..ui.wizards.plugins_manager_wizard import PluginsManagerWizard
 from ..signals import signals
 from ..settings import project_settings, ab_settings
 
@@ -22,9 +23,15 @@ class PluginController(QObject):
         self.load_plugins()
 
     def connect_signals(self):
+        signals.manage_plugins.connect(self.manage_plugins_wizard)
         signals.project_selected.connect(self.reload_plugins)
         signals.plugin_selected.connect(self.add_plugin)
         signals.plugin_deselected.connect(self.remove_plugin)
+
+    @Slot(name="openManagerWizard")
+    def manage_plugins_wizard(self) -> None:
+        wizard = PluginsManagerWizard(self.window)
+        wizard.show()
 
     def load_plugins(self):
         names = self.discover_plugins()

@@ -28,6 +28,16 @@ conda activate ab
 activity-browser
 ```
 
+## Plugins
+
+This section list known Activity Browser plugins. To add your plugin to the list open a pull request or contact [Rémy Le Calloch](mailto:remy@lecalloch.net).
+
+| Name | Description | Links | Author |
+|------|-------------|-------|--------|
+| template | An empty plugin to start from | [anaconda](https://anaconda.org/pan6ora/ab-plugin-template), [github](https://github.com/Pan6ora/activity-browser-plugin-template) | Rémy Le Calloch |
+| Notebook | Use Jupyter notebooks from AB | [anaconda](https://anaconda.org/pan6ora/ab-plugin-template), [github](https://github.com/Pan6ora/ab-plugin-Notebook) | Rémy Le Calloch |
+| ReSICLED | Evaluating the recyclability of electr(on)ic product for improving product design | [anaconda](https://anaconda.org/pan6ora/ab-plugin-resicled), [github](https://github.com/Pan6ora/ab-plugin-ReSICLED) | G-SCOP Laboratory |
+
 ## Setup dev environment
 
 You will need to have python3 and conda installed (as some dependencies are not on pip).

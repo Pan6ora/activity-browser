@@ -44,8 +44,6 @@ This create a conda environment named `local_dev` with all Activity Browser pack
 
 To start Activity Browser clone the repo, switch to conda environment and run `run-activity-browser.py`.
 
-Note: don't start from `prod` branche as it is only for anaconda deployement. Better create a nex branch from `plugin-manager`. If you need latest changes from the original project, start from the `master` branch and merge `plugin-manager`.
-
 ## Running pytest
 
 Install pytest to perform automatic testing:
@@ -74,10 +72,9 @@ pytest
 
 ### Main characteristics
 
-- A plugin is a 7z archive containing a Python library
+- A plugin is a conda package named ab-plugin-XXX
 - A plugin can add any content in two tabs (Left/Right)
 - Plugins connect to AB through signals
-- Plugins code is stored at AB global scope
 - Plugins can be selected by project
 
 ### Creating a plugin
@@ -93,55 +90,13 @@ There are two main classes :
 
 **hooks**
 
-The plugin class has 4 methods that are run by AB at a certain point :
+The plugin class has 3 methods that are run by AB at a certain point :
 
 - `load()` is run each time the plugin is added tp the project or reloaded. It kind of replaces the init method.
 - `close()` is run when AB get closed.Put there the code to end your plugin properly.
 - `remove()` is run when the plugin is removed from the current project. Use it to clean the place.
-- `delete()` is run when the plugin is fully removed from AB.
-
-### The .plugin file
-
-To create and share a plugin, simply put all your code (based on the plugin template) in a 7z archive, then rename it to something like MyAwesomePlugin.plugin
-
-> Note: this behaviour will be dropped in future 2.0 release of the plugin manager in favour of conda packages.
 
 ### Storage
-
-**Plugin code**
-
-The code goes to AB data folder. For example on Linux :
-
-```
-/home/user/.local/share/ActivityBrowser/
-plugins/
-    MyFirstPlugin/
-        ...
-    MySecondPlugin/
-        ...
-```
-
-**Plugins list**
-
-To keep track of installed plugins, an entry is added to AB settings :
-
-```json
-/home/user/.local/share/ActivityBrowser/ABsettings.json
-{
-    "custom_bw_dir": "/home/user/.local/share/Brightway3",
-    "plugins_list": {
-        "MyFirstPlugin": {
-            "author": "John Doe",
-            "author_email": "john@doe.com",
-            "description": "This is my first plugin",
-            "name": "MyFirstPlugin",
-            "url": "https://john.doe.com/myfirstplugin",
-            "version": "0.1.0"
-        }
-    },
-    "startup_project": "default"
-}
-```
 
 **Plugins data**
 
@@ -164,74 +119,6 @@ To keep track of plugins used in a project, an entry is added to project setting
     }
 }
 ```
-
-### Signals
-
-6 signals are added to manage plugins. Understanding these is the quickest way to understand how the plugin system works.
-
-**`import_plugin = Signal()`**
-
-trigger : 
-
-- `menu-bar.py` | _Import Plugin..._ menu option
-
-handlers :
-
-- `controllers/plugin.py` | launch import plugin wizard
-
-**`plugin_imported = Signal(object, str)`**
-
-trigger : 
-
-- `plugin_import_wizard.py` | plugin import successfully finished
-
-handlers :
-
-- `settings.py` | add plugin to AB settings
-
-**`delete_plugin = Signal(str)`**
-
-trigger : 
-
-- `tables/plugin.py` | right click > _Delete plugin_ on plugin
-
-handlers :
-
-- `settings.py` | remove from AB settings
-- `controllers/plugin.py` | delete plugin folder & run plugin delete() method
-
-**`plugin_selected = Signal(str)`**
-
-trigger : 
-
-- `tables/plugin.py` | plugin box checked
-
-handlers :
-
-- `settings.py` | add to project settings
-- `controllers/plugin.py` | import plugin & add tabs
-
-**`plugin_deselected = Signal(str)`**
-
-trigger : 
-
-- `tables/plugin.py` | plugin box unchecked
-
-handlers :
-
-- `settings.py` | remove from project settings
-- `controllers/plugin.py` | close plugin tabs & run plugin remove() method
-
-**`plugins_changed = Signal()`**
-
-trigger : 
-
-- `settings.py` | plugins list changed (add or remove)
-
-handlers :
-
-- `tabs/project_manager.py` | update plugins list widget
-- `models/plugins.py` | update plugins list table
 
 ## Authors
 
